@@ -208,8 +208,15 @@ def process_bert(data, tokenizer, vocab):
     # data = data[:100]
     for ins_id, instance in tqdm.tqdm(enumerate(data), total=len(data)):
 
-        _inputs = [tokenizer.cls_token_id] + tokenizer.convert_tokens_to_ids(
-            [x for x in instance["content"].lower()]) + [tokenizer.sep_token_id]
+        tokens = [x for x in instance["content"].lower().split()]
+        
+        _inputs = [tokenizer.cls_token_id] \
+                 + tokenizer.convert_tokens_to_ids(tokens) \
+                 + [tokenizer.sep_token_id]
+
+        # print(tokens)
+        # print(_inputs)
+        
         length = len(_inputs) - 2
 
         _word_mask1d = np.array([1] * length)
