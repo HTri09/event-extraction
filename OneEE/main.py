@@ -7,7 +7,6 @@ import torch
 import torch.autograd
 import torch.nn as nn
 import transformers
-from torch.optim import AdamW
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
 import config
@@ -78,10 +77,11 @@ class Trainer(object):
              'weight_decay': config.weight_decay},
         ]
 
-        self.optimizer = AdamW(params, lr=config.learning_rate, weight_decay=config.weight_decay)
+        self.optimizer = transformers.AdamW(params, lr=config.learning_rate, weight_decay=config.weight_decay)
         self.scheduler = transformers.get_linear_schedule_with_warmup(self.optimizer,
-                                                                      num_warmup_steps=int(warmup_steps),
-                                                                      num_training_steps=int(updates_total))
+                                                                      num_warmup_steps=warmup_steps,
+                                                                      num_training_steps=updates_total)
+
     def train(self, epoch, data_loader):
         self.model.train()
         loss_list = []
@@ -208,11 +208,11 @@ class Trainer(object):
         ac_f1, ac_r, ac_p = utils.calculate_f1(total_results["ac_r"], total_results["ac_p"], total_results["ac_c"])
         title = "EVAL" if not is_test else "TEST"
 
-        table = pt.PrettyTable(["{} {}".format(title, epoch), "Precision", "Recall", "F1"])
-        table.add_row(["Trigger I"] + ["{:3.4f}".format(x) for x in [ti_p, ti_r, ti_f1]])
-        table.add_row(["Trigger C"] + ["{:3.4f}".format(x) for x in [tc_p, tc_r, tc_f1]])
-        table.add_row(["Argument I"] + ["{:3.4f}".format(x) for x in [ai_p, ai_r, ai_f1]])
-        table.add_row(["Argument C"] + ["{:3.4f}".format(x) for x in [ac_p, ac_r, ac_f1]])
+        table = pt.PrettyTable(["{} {}".format(title, epoch), 'F1', "Precision", "Recall"])
+        table.add_row(["Trigger I"] + ["{:3.4f}".format(x) for x in [ti_f1, ti_p, ti_r]])
+        table.add_row(["Trigger C"] + ["{:3.4f}".format(x) for x in [tc_f1, tc_p, tc_r]])
+        table.add_row(["Argument I"] + ["{:3.4f}".format(x) for x in [ai_f1, ai_p, ai_r]])
+        table.add_row(["Argument C"] + ["{:3.4f}".format(x) for x in [ac_f1, ac_p, ac_r]])
 
         logger.info("\n{}".format(table))
         return (ti_f1 + ai_f1 + tc_f1 + ac_f1) / 4
