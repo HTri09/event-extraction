@@ -319,7 +319,7 @@ if __name__ == '__main__':
     best_test_f1 = 0
 
     if args.inference == 'inference':
-        trainer.load("model.pt")
+        trainer.load("../model.pt")
         trainer.inference(test_loader)
         exit(0)
 
