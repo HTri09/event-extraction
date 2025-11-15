@@ -151,51 +151,11 @@ class Trainer(object):
             # arg_logits = arg_logits[..., :-1]
             # role_logits = role_logits[..., :-1, :]
             
-            if (i + 1) % 8 == 0:
-                with torch.no_grad():
-                    tri_pred_mask = tri_logits > 0
-                    arg_pred_mask = arg_logits > 0
-                    role_pred_mask = role_logits > 0
-
-                    tri_gold_mask = tri_labels
-                    arg_gold_mask = arg_labels
-                    role_gold_mask = role_labels
-
-                    tri_pred_idx = tri_pred_mask.nonzero(as_tuple=False)
-                    tri_gold_idx = tri_gold_mask.nonzero(as_tuple=False)
-
-                    arg_pred_idx = arg_pred_mask.nonzero(as_tuple=False)
-                    arg_gold_idx = arg_gold_mask.nonzero(as_tuple=False)
-
-                    role_pred_idx = role_pred_mask.nonzero(as_tuple=False)
-                    role_gold_idx = role_gold_mask.nonzero(as_tuple=False)
-
-                    logger.info(
-                        "Epoch {} | Batch {} | tri_pred(first 20) {} | tri_gold(first 20) {}".format(
-                            epoch,
-                            i + 1,
-                            tri_pred_idx[:20].tolist(),
-                            tri_gold_idx[:20].tolist()
-                        )
-                    )
-
-                    logger.info(
-                        "arg_pred(first 20) {} | arg_gold(first 20) {}".format(
-                            arg_pred_idx[:20].tolist(),
-                            arg_gold_idx[:20].tolist()
-                        )
-                    )
-
-                    logger.info(
-                        "role_pred(first 20) {} | role_gold(first 20) {}".format(
-                            role_pred_idx[:20].tolist(),
-                            role_gold_idx[:20].tolist()
-                        )
-                    )
-
-
-
-
+            print(tri_logits)
+            print(arg_logits)
+            print(role_logits)
+            
+            
             loss.backward()
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), config.grad_clip_norm)
             self.optimizer.step()
