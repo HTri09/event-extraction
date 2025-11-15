@@ -1,5 +1,6 @@
 import argparse
 import random
+import warnings
 
 import numpy as np
 import prettytable as pt
@@ -14,6 +15,7 @@ import data_loader
 import utils
 from model import Model
 
+warnings.warn('ignore')
 
 def compute_kl_loss(p, q):
     p_loss = F.kl_div(p, q, reduction='none')
