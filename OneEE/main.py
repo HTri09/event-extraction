@@ -69,9 +69,11 @@ class Trainer(object):
             {'params': [p for n, p in model.bert.named_parameters() if not any(nd in n for nd in no_decay)],
              'lr': config.bert_learning_rate,
              'weight_decay': config.weight_decay},
+            
             {'params': [p for n, p in model.bert.named_parameters() if any(nd in n for nd in no_decay)],
              'lr': config.bert_learning_rate,
              'weight_decay': 0.0},
+            
             {'params': other_params,
              'lr': config.learning_rate,
              'weight_decay': config.weight_decay},
@@ -149,15 +151,15 @@ class Trainer(object):
             # arg_logits = arg_logits[..., :-1]
             # role_logits = role_logits[..., :-1, :]
             
-            if (i + 1) % 16 == 0:
+            if (i + 1) % 8 == 0:
                 with torch.no_grad():
                     tri_pred = tri_logits.argmax(dim=-1)       # [B, L, L]
                     arg_pred = arg_logits.argmax(dim=-1)       # [B, L, L]
                     role_pred = role_logits.argmax(dim=-1)     # [B, L, L]
 
-                    tri_gold = tri_labels.argmax(dim=-1)
-                    arg_gold = arg_labels.argmax(dim=-1)
-                    role_gold = role_labels.argmax(dim=-1)
+                    tri_gold = tri_labels.long().argmax(dim=-1)
+                    arg_gold = arg_labels.long().argmax(dim=-1)
+                    role_gold = role_labels.long().argmax(dim=-1)
 
                     sample_b = 0
                     sample_words = min(5, tri_pred.size(1))
@@ -184,6 +186,7 @@ class Trainer(object):
                             role_gold[sample_b, :sample_words, :sample_words].tolist()
                         )
                     )
+
 
 
             loss.backward()
