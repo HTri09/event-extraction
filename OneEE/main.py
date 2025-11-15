@@ -171,7 +171,7 @@ class Trainer(object):
                     )
 
 
-            loss.backward()i
+            loss.backward()
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), config.grad_clip_norm)
             self.optimizer.step()
             self.optimizer.zero_grad()
